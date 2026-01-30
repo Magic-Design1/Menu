@@ -3,65 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Master POS</title>
+    <title>Elite Admin | Revenue Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #020617; --card: #0f172a; --primary: #3b82f6; --success: #22c55e; --danger: #ef4444; }
+        :root { 
+            --bg: #020617; 
+            --card: #0f172a; 
+            --primary: #3b82f6; 
+            --success: #22c55e; 
+            --accent: #8b5cf6;
+        }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 15px; }
         
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--card); border-radius: 20px; border: 1px solid #1e293b; margin-bottom: 20px; }
-        .live-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 800; }
-        .dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
-
-        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 350px 1fr; } }
-
-        /* Waiter Section */
-        .waiter-card { 
-            background: linear-gradient(135deg, #450a0a, #991b1b); border: 2px solid var(--danger);
-            padding: 20px; border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+        /* Dashboard Header */
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px; background: var(--card); border-radius: 24px; 
+            border: 1px solid #1e293b; margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .btn-resolve { background: white; color: #991b1b; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; }
 
-        /* Kitchen Section */
+        /* Revenue & Sales Widget */
+        .revenue-widget {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
+        }
+        .rev-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .rev-card::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%);
+        }
+        .rev-card small { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+        .rev-card div { font-size: 1.6rem; font-weight: 900; margin-top: 5px; color: var(--success); }
+        .rev-card.blue div { color: var(--primary); }
+
+        /* Grid Layout */
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 1024px) { .grid { grid-template-columns: 350px 1fr; } }
+
         .order-card { 
             background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #1e293b;
-            margin-bottom: 15px; position: relative; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 15px; position: relative;
         }
-        .order-card.fade-out { transform: scale(0.9) opacity(0); opacity: 0; }
-        
-        .table-no { background: var(--primary); color: white; padding: 5px 15px; border-radius: 10px; font-weight: 800; font-size: 0.9rem; }
-        .item-list { margin: 20px 0; border-top: 1px dashed #334155; padding-top: 15px; }
-        .item-row { display: flex; justify-content: space-between; padding: 5px 0; font-weight: 600; font-size: 1.1rem; }
-
+        .table-no { background: var(--primary); color: white; padding: 6px 14px; border-radius: 12px; font-weight: 800; }
         .btn-done { 
-            width: 100%; background: var(--success); color: white; border: none; padding: 20px; 
-            border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+            width: 100%; background: var(--success); color: white; border: none; padding: 18px; 
+            border-radius: 18px; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 15px;
         }
-        .btn-done:active { transform: scale(0.98); background: #16a34a; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .waiter-card { background: #450a0a; border: 2px solid #ef4444; padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
+        .btn-resolve { background: white; color: #991b1b; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 800; }
     </style>
 </head>
 <body>
 
 <header>
     <div style="font-weight: 800; font-size: 1.2rem;">ELITE <span style="color:var(--primary)">POS</span></div>
-    <div class="live-indicator"><div class="dot"></div> <span id="sync-text">SYSTEM LIVE</span></div>
+    <div style="font-size: 0.8rem; opacity: 0.7;" id="last-update">Syncing...</div>
 </header>
 
-<div class="dashboard-grid">
-    <div id="waiter-feed"></div>
+<div class="revenue-widget">
+    <div class="rev-card">
+        <small>Daily Revenue</small>
+        <div id="total-revenue">$0.00</div>
+    </div>
+    <div class="rev-card blue">
+        <small>Orders Today</small>
+        <div id="order-count">0</div>
+    </div>
+</div>
 
+<div class="grid">
+    <div id="waiter-feed"></div>
     <div id="orders-feed"></div>
 </div>
 
 <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
 <script>
-    // حط لينك الـ Deployment الجديد هنا
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNzEr3RsPtckw-AdD1DmFBPW_yLSvVtN8135lvei6tdynJ9HQBJoHDjPnb2WKQzSoeqA/exec";
     let lastId = 0;
 
@@ -70,70 +92,80 @@
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             
-            // تنبيه صوتي للجديد
-            if(data.length > 0 && data[data.length-1].id !== lastId) {
-                if(lastId !== 0) document.getElementById('alertSound').play().catch(e => {});
-                lastId = data[data.length-1].id;
-            }
-
+            calculateDailyStats(data); // تشغيل محرك الحساب
             render(data);
-            document.getElementById('sync-text').innerText = "SYSTEM LIVE";
+            
+            document.getElementById('last-update').innerText = "Last Update: " + new Date().toLocaleTimeString();
         } catch (e) {
-            document.getElementById('sync-text').innerText = "CONNECTING...";
+            document.getElementById('last-update').innerText = "Connecting...";
         }
     }
 
+    function calculateDailyStats(data) {
+        // فلترة كل الأوردرات التي تمت اليوم (سواء كانت Pending أو Done)
+        // ملاحظة: لجعل الحساب دقيق، الكود يقرأ خانة الـ Total
+        
+        let totalRev = 0;
+        let countToday = 0;
+
+        data.forEach(item => {
+            if(item.type === 'order') {
+                countToday++;
+                // تنظيف النص لتحويله لرقم (إزالة علامة $)
+                let price = parseFloat(item.total.replace(/[^0-9.-]+/g,"")) || 0;
+                totalRev += price;
+            }
+        });
+
+        document.getElementById('total-revenue').innerText = "$" + totalRev.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('order-count').innerText = countToday;
+    }
+
     function render(data) {
-        const waiterArea = document.getElementById('waiter-feed');
+        // عرض الطلبات النشطة فقط (غير المنتهية)
+        const activeOrders = data.filter(d => d.type === 'order' && d.status !== 'Done');
+        const activeCalls = data.filter(d => d.type === 'waiter' && d.status !== 'Resolved');
+
         const ordersArea = document.getElementById('orders-feed');
+        const waiterArea = document.getElementById('waiter-feed');
 
-        const waiters = data.filter(d => d.type === 'waiter');
-        const orders = data.filter(d => d.type === 'order');
-
-        waiterArea.innerHTML = waiters.map(c => `
+        waiterArea.innerHTML = activeCalls.map(c => `
             <div class="waiter-card" id="card-${c.id}">
-                <div><b>🛎️ Table ${c.table}</b></div>
-                <button class="btn-resolve" onclick="processTask('${c.id}', 'Resolved')">RESOLVE</button>
+                <b>🛎️ Table ${c.table}</b>
+                <button class="btn-resolve" onclick="processTask('${c.id}', 'Resolved')">OK</button>
             </div>
         `).join('');
 
-        ordersArea.innerHTML = orders.reverse().map(o => `
+        ordersArea.innerHTML = activeOrders.reverse().map(o => `
             <div class="order-card" id="card-${o.id}">
                 <div style="display:flex; justify-content:space-between">
-                    <span class="table-no">TABLE ${o.table}</span>
-                    <span style="font-weight:800; color:var(--primary)">${o.total}</span>
+                    <span class="table-no">T-${o.table}</span>
+                    <span style="font-weight:800; color:var(--success)">${o.total}</span>
                 </div>
-                <div class="item-list">
-                    ${o.items.map(i => `<div class="item-row"><span>${i.qty}x ${i.name}</span></div>`).join('')}
+                <div style="margin:15px 0; border-top:1px solid #1e293b; padding-top:10px;">
+                    ${o.items.map(i => `<div style="padding:4px 0;">${i.qty}x ${i.name}</div>`).join('')}
                 </div>
-                <button class="btn-done" onclick="processTask('${o.id}', 'Done')">COMPLETE ORDER ✅</button>
+                <button class="btn-done" onclick="processTask('${o.id}', 'Done')">COMPLETE & RECORD</button>
             </div>
-        `).join('') || '<div style="text-align:center; opacity:0.3; padding:50px;">No Active Orders</div>';
+        `).join('') || '<div style="text-align:center; opacity:0.3; padding:40px;">No Pending Orders</div>';
     }
 
     async function processTask(id, status) {
-        // 1. إخفاء فوري من الواجهة (لا ننتظر السيرفر)
         const el = document.getElementById('card-' + id);
-        if(el) { el.style.opacity = "0.2"; el.style.pointerEvents = "none"; }
-
-        // 2. إرسال التحديث للسيرفر
+        if(el) el.style.opacity = "0.3";
+        
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({ action: 'update', id: id, status: status })
             });
-            // 3. مسحه نهائياً بعد نجاح الإرسال (بصرياً)
-            if(el) el.remove();
-        } catch (e) {
-            alert("خطأ في الاتصال! حاول مرة أخرى.");
-            if(el) { el.style.opacity = "1"; el.style.pointerEvents = "auto"; }
-        }
+            setTimeout(sync, 1000);
+        } catch (e) { alert("Error!"); }
     }
 
-    setInterval(sync, 4000); // تحديث كل 4 ثوانٍ
+    setInterval(sync, 5000);
     sync();
 </script>
 </body>
 </html>
-
