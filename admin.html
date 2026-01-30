@@ -1,170 +1,190 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Admin | لوحة التحكم المتكاملة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <title>Elite Ultra POS | Admin Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #020617; --card: #0f172a; --primary: #3b82f6; --success: #22c55e; --danger: #ef4444; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 15px; direction: rtl; }
-        
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--card); border-radius: 20px; border: 1px solid #1e293b; margin-bottom: 20px; direction: ltr; }
-        
-        /* Stats Styles */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #1e293b; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .stat-box small { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .stat-box span { font-size: 1.8rem; font-weight: 900; color: var(--success); }
+        :root { --bg: #030712; --card: #111827; --primary: #3b82f6; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f3f4f6; margin: 0; padding: 15px; }
 
-        .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 1024px) { .dashboard { grid-template-columns: 1fr 350px; } }
+        /* Stunning Top Stats */
+        .stats-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
+        .stat-card { 
+            background: var(--card); padding: 20px 10px; border-radius: 24px; text-align: center; 
+            border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .stat-card small { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+        .stat-card div { font-size: 1.4rem; font-weight: 900; margin-top: 8px; }
+        .stat-revenue { color: var(--success); }
+        .stat-orders { color: var(--primary); }
+        .stat-waiter { color: var(--danger); }
+
+        /* Dashboard Layout */
+        .main-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 1024px) { .main-grid { grid-template-columns: 1fr 380px; } }
 
         /* Order Cards */
-        .card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #1e293b; margin-bottom: 15px; position: relative; animation: slideUp 0.4s ease; }
-        .waiter-card { border: 2px solid var(--danger); background: linear-gradient(to bottom, #450a0a, #1e293b); }
+        .order-card { 
+            background: var(--card); border-radius: 28px; padding: 25px; margin-bottom: 18px; 
+            border: 1px solid #1f2937; position: relative; overflow: hidden;
+            animation: slideIn 0.5s ease;
+        }
+        .order-card.priority { border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
         
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; margin-top: 15px; font-size: 1.1rem; transition: 0.2s; }
-        .btn-done { background: var(--success); color: white; box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3); }
-        .btn-resolve { background: white; color: #991b1b; }
-        .btn:active { transform: scale(0.96); opacity: 0.8; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .table-no { background: var(--primary); color: white; padding: 6px 16px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; }
         
-        .item-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 1.1rem; }
-        .table-badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: 10px; font-size: 0.9rem; }
+        /* Performance Timer Surprise */
+        .timer-badge { font-size: 0.75rem; color: var(--warning); background: rgba(245, 158, 11, 0.1); padding: 4px 10px; border-radius: 8px; font-weight: 700; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .items-area { margin: 15px 0; border-top: 1px dashed #374151; padding-top: 15px; }
+        .item-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 1.1rem; font-weight: 600; }
+        .item-qty { color: var(--primary); margin-right: 10px; font-weight: 800; }
+
+        /* Big Action Buttons */
+        .btn-done { 
+            width: 100%; background: var(--success); color: white; border: none; padding: 20px; 
+            border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 8px 15px rgba(16, 185, 129, 0.2);
+        }
+        .btn-done:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(16, 185, 129, 0.3); }
+
+        /* Waiter Box */
+        .waiter-card { 
+            background: linear-gradient(135deg, #450a0a, #111827); border: 2px solid var(--danger);
+            padding: 20px; border-radius: 24px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+            animation: pulse-danger 2s infinite;
+        }
+        @keyframes pulse-danger { 0% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); } 50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); } 100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); } }
+        .btn-resolve { background: white; color: #450a0a; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<header>
-    <div style="font-weight: 800; letter-spacing: 1px;">ELITE <span style="color:var(--primary)">POS</span></div>
-    <div id="status" style="font-size: 0.7rem; color: var(--success);">● متصل بالنظام</div>
-</header>
-
-<div class="stats-grid">
-    <div class="stat-box">
-        <small>أرباح اليوم</small>
-        <span id="revenue-display">0.00</span>
+<div class="stats-container">
+    <div class="stat-card">
+        <small>Total Orders</small>
+        <div id="count-all" class="stat-orders">0</div>
     </div>
-    <div class="stat-box">
-        <small>إجمالي الطلبات</small>
-        <span id="orders-count" style="color: var(--primary);">0</span>
+    <div class="stat-card">
+        <small>Revenue</small>
+        <div id="rev-total" class="stat-revenue">$0.00</div>
+    </div>
+    <div class="stat-card">
+        <small>Waiter Calls</small>
+        <div id="waiter-total" class="stat-waiter">0</div>
     </div>
 </div>
 
-<div class="dashboard">
-    <div id="orders-feed"></div>
+<div class="main-grid">
+    <div id="kitchen-display"></div>
 
-    <div id="waiter-feed"></div>
+    <div id="waiter-sidebar"></div>
 </div>
 
-<audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+<audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
 <script>
-    // الرابط الخاص بك مدمج هنا
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNzEr3RsPtckw-AdD1DmFBPW_yLSvVtN8135lvei6tdynJ9HQBJoHDjPnb2WKQzSoeqA/exec";
+    let lastId = 0;
 
-    async function updateSystem() {
+    async function refresh() {
         try {
-            const response = await fetch(SCRIPT_URL);
-            const data = await response.json();
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
             
-            if (!data || !Array.isArray(data)) return;
+            if (data.length > 0 && data[data.length-1].id != lastId) {
+                if(lastId !== 0) document.getElementById('notifSound').play().catch(e => {});
+                lastId = data[data.length-1].id;
+            }
 
-            // 1. محرك حساب الأرباح (يحسب كل الطلبات من نوع order)
-            let totalRevenue = 0;
-            let totalOrders = 0;
-
-            data.forEach(item => {
-                if (item.type === 'order') {
-                    totalOrders++;
-                    let price = 0;
-                    if (typeof item.total === 'string') {
-                        price = parseFloat(item.total.replace(/[^0-9.-]+/g, "")) || 0;
-                    } else {
-                        price = parseFloat(item.total) || 0;
-                    }
-                    totalRevenue += price;
-                }
-            });
-
-            document.getElementById('revenue-display').innerText = totalRevenue.toLocaleString('ar-EG', { minimumFractionDigits: 2 });
-            document.getElementById('orders-count').innerText = totalOrders;
-
-            // 2. عرض الطلبات والنداءات
-            renderData(data);
-            
-            document.getElementById('status').innerText = "● تحديث مباشر: " + new Date().toLocaleTimeString('ar-EG');
-        } catch (e) {
-            document.getElementById('status').innerText = "○ خطأ في الاتصال";
-            document.getElementById('status').style.color = "var(--danger)";
-        }
+            processStats(data);
+            renderUI(data);
+        } catch (e) { console.log("Reconnecting..."); }
     }
 
-    function renderData(data) {
-        const waiterFeed = document.getElementById('waiter-feed');
-        const ordersFeed = document.getElementById('orders-feed');
+    function processStats(data) {
+        let totalRev = 0;
+        let orderCount = 0;
+        let waiterCount = 0;
 
-        // فلترة العناصر النشطة (التي لم يتم إنهاؤها)
-        const pendingOrders = data.filter(d => d.type === 'order' && d.status !== 'Done' && d.status !== 'Completed');
-        const pendingCalls = data.filter(d => d.type === 'waiter' && d.status !== 'Resolved');
+        data.forEach(d => {
+            if(d.type === 'order') {
+                orderCount++;
+                let price = parseFloat(d.total.replace(/[^0-9.-]+/g,"")) || 0;
+                totalRev += price;
+            } else if (d.type === 'waiter' && d.status !== 'Resolved') {
+                waiterCount++;
+            }
+        });
 
-        // تحديث قسم الويتر
-        waiterFeed.innerHTML = pendingCalls.map(c => `
-            <div class="card waiter-card" id="row-${c.id}">
-                <div style="font-weight:800; font-size:1.2rem; margin-bottom:10px;">🛎️ نداء طاولة ${c.table}</div>
-                <button class="btn btn-resolve" onclick="finishTask('${c.id}', 'Resolved')">إخفاء التنبيه</button>
+        document.getElementById('rev-total').innerText = "$" + totalRev.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('count-all').innerText = orderCount;
+        document.getElementById('waiter-total').innerText = waiterCount;
+    }
+
+    function renderUI(data) {
+        const kitchen = document.getElementById('kitchen-display');
+        const waiter = document.getElementById('waiter-sidebar');
+
+        const pendingOrders = data.filter(d => d.type === 'order' && d.status !== 'Done');
+        const pendingWaiters = data.filter(d => d.type === 'waiter' && d.status !== 'Resolved');
+
+        // Waiter Calls Sidebar
+        waiter.innerHTML = pendingWaiters.map(w => `
+            <div class="waiter-card" id="row-${w.id}">
+                <div><small style="opacity:0.7">ALERT</small><br><b>TABLE ${w.table}</b></div>
+                <button class="btn-resolve" onclick="action('${w.id}', 'Resolved')">DONE</button>
             </div>
         `).join('');
 
-        // تحديث قسم الطلبات
-        ordersFeed.innerHTML = pendingOrders.reverse().map(o => `
-            <div class="card" id="row-${o.id}">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <span class="table-badge">طاولة ${o.table}</span>
-                    <span style="font-weight:900; color:var(--success); font-size:1.3rem;">${o.total}</span>
-                </div>
-                <div style="margin:10px 0;">
-                    ${o.items.map(i => `
-                        <div class="item-row">
-                            <span>${i.name}</span>
-                            <span style="color:var(--primary)">x${i.qty}</span>
+        // Kitchen Orders Display
+        kitchen.innerHTML = pendingOrders.reverse().map(o => {
+            // Surprise 1: Time Tracker Calculation
+            const minutesAgo = Math.floor((new Date() - new Date(o.time)) / 60000);
+            
+            return `
+                <div class="order-card priority" id="row-${o.id}">
+                    <div class="card-header">
+                        <div>
+                            <span class="table-no">T-${o.table}</span>
+                            <div style="margin-top:8px; font-size:0.7rem; opacity:0.5;">ID: #${o.id.toString().slice(-4)}</div>
                         </div>
-                    `).join('')}
+                        <div class="timer-badge">⏱ ${minutesAgo}m ago</div>
+                    </div>
+                    <div class="items-area">
+                        ${o.items.map(i => `<div class="item-row"><span><span class="item-qty">${i.qty}x</span>${i.name}</span></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin:15px 0; font-weight:800;">
+                        <span>TOTAL</span><span>${o.total}</span>
+                    </div>
+                    <button class="btn-done" onclick="action('${o.id}', 'Done')">COMPLETE ORDER</button>
                 </div>
-                <button class="btn btn-done" onclick="finishTask('${o.id}', 'Done')">إتمام الطلب ✅</button>
-            </div>
-        `).join('') || '<div style="text-align:center; opacity:0.3; padding:50px;">لا يوجد طلبات نشطة حالياً</div>';
+            `;
+        }).join('') || '<div style="text-align:center; padding:100px; opacity:0.2;">KITCHEN EMPTY</div>';
     }
 
-    async function finishTask(id, status) {
-        const el = document.getElementById('row-' + id);
-        if (el) {
-            el.style.transition = "0.3s";
-            el.style.opacity = "0.2";
-            el.style.transform = "scale(0.95)";
-        }
-
+    async function action(id, status) {
+        const card = document.getElementById('row-' + id);
+        if(card) { card.style.opacity = "0.3"; card.style.pointerEvents = "none"; }
+        
         try {
-            // إرسال التحديث للشيت
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({ action: 'update', id: id, status: status })
             });
-            // تحديث فوري للبيانات بعد ثانية
-            setTimeout(updateSystem, 1000);
-        } catch (e) {
-            alert("حدث خطأ أثناء التحديث");
-            if (el) el.style.opacity = "1";
-        }
+            setTimeout(refresh, 1000);
+        } catch (e) { alert("Network Error"); }
     }
 
-    // تحديث تلقائي كل 5 ثوانٍ
-    setInterval(updateSystem, 5000);
-    updateSystem();
+    setInterval(refresh, 5000);
+    refresh();
 </script>
 </body>
 </html>
