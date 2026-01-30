@@ -1,176 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Admin - POS System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elite Admin Imperial | لوحة التحكم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --bg: #f1f5f9; --text: #0f172a; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        body { background: var(--bg); margin: 0; padding: 15px; color: var(--text); }
+        :root {
+            --primary: #6366f1;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+        }
 
-        /* Stats Bar */
-        .stats-bar {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px; margin-bottom: 25px;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        /* Header & Stats */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; background: var(--card-bg); backdrop-filter: blur(10px);
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .logo-area h1 { margin: 0; font-size: 1.2rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px;
         }
         .stat-card {
-            background: white; padding: 15px; border-radius: 18px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center;
-            border-bottom: 4px solid var(--primary);
+            background: var(--card-bg); padding: 15px; border-radius: 20px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.05);
         }
-        .stat-card small { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
-        .stat-card div { font-size: 1.3rem; font-weight: 800; margin-top: 5px; }
+        .stat-card small { font-size: 0.6rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; }
+        .stat-card div { font-size: 1.2rem; font-weight: 800; margin-top: 5px; color: var(--primary); }
 
-        /* Sections Layout */
-        .admin-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 1024px) { .admin-container { grid-template-columns: 350px 1fr; } }
-
-        /* Waiter Alerts */
-        .section-title { font-size: 1rem; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        /* Waiter Alerts Neon */
+        .waiter-container { margin-bottom: 25px; }
         .waiter-card {
-            background: #fff1f2; border: 1px solid #fecaca; padding: 15px;
-            border-radius: 18px; margin-bottom: 12px; display: flex;
+            background: linear-gradient(45deg, #450a0a, #991b1b);
+            border: 2px solid #ef4444; color: white;
+            padding: 20px; border-radius: 24px; display: flex;
             justify-content: space-between; align-items: center;
-            animation: slideIn 0.3s ease;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            animation: pulse-red 2s infinite; margin-bottom: 10px;
         }
-        .waiter-card b { color: #be123c; font-size: 0.95rem; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0px rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.7); } 100% { box-shadow: 0 0 0px rgba(239, 68, 68, 0.4); } }
 
-        /* Order Cards */
-        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        /* Orders Grid */
+        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .order-card {
-            background: white; border-radius: 24px; padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #e2e8f0;
-            position: relative; transition: 0.3s;
+            background: var(--card-bg); border-radius: 30px; padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(15px);
+            position: relative; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .order-card.new { animation: pulseGlow 2s infinite; border-color: var(--primary); }
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 0px rgba(37,99,235,0); } 50% { box-shadow: 0 0 15px rgba(37,99,235,0.2); } 100% { box-shadow: 0 0 0px rgba(37,99,235,0); } }
+        .order-card:active { transform: scale(0.95); }
+        .order-card.new { border: 2px solid var(--primary); animation: glow-blue 2s infinite; }
+        @keyframes glow-blue { 0% { box-shadow: 0 0 0px var(--primary); } 50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); } 100% { box-shadow: 0 0 0px var(--primary); } }
 
-        .order-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .table-no { background: var(--text); color: white; padding: 5px 12px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .table-no { background: var(--primary); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; }
         
-        .item-list { list-style: none; padding: 0; margin: 15px 0; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
-        .item-list li { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.9rem; }
-        .item-qty { font-weight: 800; color: var(--primary); margin-right: 8px; }
+        .item-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .item-name { font-weight: 600; color: #e2e8f0; }
+        .item-qty { color: var(--primary); font-weight: 800; margin-right: 10px; }
 
-        .btn-done {
-            width: 100%; padding: 12px; border: none; border-radius: 14px;
-            background: var(--success); color: white; font-weight: 800;
-            cursor: pointer; transition: 0.2s; font-size: 0.9rem;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+        .action-btn {
+            width: 100%; padding: 18px; border: none; border-radius: 18px;
+            margin-top: 20px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; transition: 0.3s; color: white;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-done:hover { opacity: 0.9; transform: scale(0.98); }
-        .btn-clear { background: white; border: 1px solid #fecaca; color: #be123c; padding: 5px 10px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.7rem; }
+        .btn-done { background: linear-gradient(to right, #10b981, #059669); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); }
+        .btn-waiter { background: #ffffff; color: #991b1b; padding: 12px 20px; border-radius: 12px; font-weight: 800; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="stats-bar">
-    <div class="stat-card"><small>Total Orders</small><div id="stat-count">0</div></div>
-    <div class="stat-card"><small>Daily Revenue</small><div id="stat-rev">$0.00</div></div>
-    <div class="stat-card"><small>Waiter Calls</small><div id="stat-calls" style="color:var(--danger)">0</div></div>
+<div class="header">
+    <div class="logo-area">
+        <h1>ELITE IMPERIAL</h1>
+        <small id="sync-status" style="color: var(--success);">● LIVE SYSTEMS</small>
+    </div>
+    <div id="clock" style="font-weight: 800; opacity: 0.8;">00:00</div>
 </div>
 
-<div class="admin-container">
-    <div class="waiter-section">
-        <div class="section-title">🛎️ Waiter Assistance</div>
-        <div id="waiter-feed"></div>
-    </div>
-
-    <div class="orders-section">
-        <div class="section-title">👨‍🍳 Kitchen Display (Active)</div>
-        <div id="orders-feed" class="orders-grid"></div>
-    </div>
+<div class="stats-grid">
+    <div class="stat-card"><small>Pending</small><div id="stat-pending">0</div></div>
+    <div class="stat-card"><small>Revenue</small><div id="stat-rev">$0</div></div>
+    <div class="stat-card"><small>Calls</small><div id="stat-calls">0</div></div>
 </div>
 
-<audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+<div id="waiter-feed" class="waiter-container"></div>
+
+<div class="orders-grid" id="orders-feed">
+    </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5gZRkskMLq3ZetRFbjLXZV7F21gMY3RgbQGj-e1nXdDeY1admAZbLDeqWErEtK3uHJA/exec";
-    let lastId = 0;
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3ovzhbSJA69M4kou2v2zDK6-Ql54eWy5-8JDmzjeq2aotxgC8Jfpk3VwOEYsy0IVAoQ/exec";
+    let lastKnownCount = 0;
 
-    async function refreshData() {
+    // تحديث الساعة
+    function updateClock() {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+    setInterval(updateClock, 1000);
+
+    async function fetchData() {
         try {
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             
-            // تصفية البيانات (فقط التي حالتها ليست Completed)
             const activeOrders = data.filter(d => d.type === 'order' && d.status !== 'Completed');
             const waiterCalls = data.filter(d => d.type === 'waiter');
-            const totalRevenue = data.filter(d => d.type === 'order').reduce((s, o) => s + parseFloat(o.total.replace('$', '')), 0);
+            const revenue = data.filter(d => d.type === 'order').reduce((s, o) => s + parseFloat(o.total.replace('$', '')), 0);
 
-            // صوت تنبيه عند وجود جديد
-            if(data.length > 0 && data[data.length-1].id > lastId) {
-                if(lastId !== 0) document.getElementById('alertSound').play().catch(e => {});
-                lastId = data[data.length-1].id;
+            // صوت تنبيه عند الجديد
+            if(data.length > lastKnownCount && lastKnownCount !== 0) {
+                window.navigator.vibrate([200, 100, 200]); // اهتزاز للموبايل
             }
+            lastKnownCount = data.length;
 
-            updateStats(activeOrders.length, totalRevenue, waiterCalls.length);
-            renderOrders(activeOrders);
+            updateStats(activeOrders.length, revenue, waiterCalls.length);
             renderWaiters(waiterCalls);
-        } catch (e) { console.log("Sync Error"); }
+            renderOrders(activeOrders);
+        } catch (e) {
+            document.getElementById('sync-status').innerText = "○ DISCONNECTED";
+            document.getElementById('sync-status').style.color = "var(--accent)";
+        }
     }
 
-    function updateStats(count, rev, calls) {
-        document.getElementById('stat-count').innerText = count;
-        document.getElementById('stat-rev').innerText = "$" + rev.toFixed(2);
-        document.getElementById('stat-calls').innerText = calls;
+    function updateStats(p, r, c) {
+        document.getElementById('stat-pending').innerText = p;
+        document.getElementById('stat-rev').innerText = "$" + r.toFixed(2);
+        document.getElementById('stat-calls').innerText = c;
     }
 
     function renderWaiters(calls) {
         const feed = document.getElementById('waiter-feed');
-        feed.innerHTML = calls.reverse().map(c => `
+        feed.innerHTML = calls.map(c => `
             <div class="waiter-card">
-                <b>📍 Table ${c.table}</b>
-                <button class="btn-clear" onclick="markDone('${c.id}', 'WaiterDone', this)">CLEAR</button>
+                <div>
+                    <div style="font-size: 0.7rem; font-weight: 800; opacity: 0.8;">SERVICE REQUEST</div>
+                    <div style="font-size: 1.2rem; font-weight: 800;">Table ${c.table}</div>
+                </div>
+                <button class="btn-waiter" onclick="removeVisual(this)">RESOLVE</button>
             </div>
-        `).join('') || '<p style="opacity:0.5; font-size:0.8rem;">No active calls</p>';
+        `).join('');
     }
 
     function renderOrders(orders) {
         const feed = document.getElementById('orders-feed');
         feed.innerHTML = orders.reverse().map(o => `
-            <div class="order-card ${Date.now() - o.id < 60000 ? 'new' : ''}">
+            <div class="order-card ${Date.now() - o.id < 30000 ? 'new' : ''}">
                 <div class="order-header">
-                    <span class="table-no">TABLE ${o.table}</span>
-                    <span style="font-size:0.7rem; font-weight:700; color:#94a3b8;">${new Date(o.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                    <span class="table-no">T-${o.table}</span>
+                    <span style="font-size: 0.7rem; font-weight: 700; opacity: 0.5;">${new Date(o.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                 </div>
-                <ul class="item-list">
-                    ${o.items.map(i => `<li><span><span class="item-qty">${i.qty}x</span> ${i.name}</span></li>`).join('')}
-                </ul>
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:800;">
-                    <span>Total:</span><span>${o.total}</span>
+                <div class="order-body">
+                    ${o.items.map(i => `
+                        <div class="item-row">
+                            <span class="item-name"><span class="item-qty">${i.qty}x</span> ${i.name}</span>
+                        </div>
+                    `).join('')}
                 </div>
-                <button class="btn-done" onclick="markDone('${o.id}', 'Completed', this)">
-                    ✅ MARK AS DONE
+                <div style="display:flex; justify-content:space-between; margin-top:20px; font-weight:800; font-size:1.1rem;">
+                    <span style="opacity:0.5;">Total</span>
+                    <span>${o.total}</span>
+                </div>
+                <button class="action-btn btn-done" onclick="removeVisual(this)">
+                    COMPLETE ORDER
                 </button>
             </div>
-        `).join('') || '<p style="opacity:0.5;">Waiting for orders...</p>';
+        `).join('');
     }
 
-    async function markDone(id, newStatus, btn) {
-        const originalText = btn.innerHTML;
-        btn.innerHTML = "Processing...";
-        btn.disabled = true;
-
-        // في النسخة السحابية، سنرسل طلب تحديث للشيت
-        // للتجربة الفورية، سنقوم بإخفاء العنصر بصرياً أولاً
-        btn.closest('.order-card, .waiter-card').style.opacity = "0.3";
-        btn.closest('.order-card, .waiter-card').style.pointerEvents = "none";
-
-        // ملحوظة: لإتمام المسح فعلياً من جوجل شيت، يجب إضافة دالة UPDATE في الـ Script
-        // لكن حالياً سنعتمد على الإخفاء البصري لحين تحديث الـ Script الخاص بك
-        setTimeout(() => {
-            btn.closest('.order-card, .waiter-card').remove();
-        }, 500);
+    function removeVisual(btn) {
+        const card = btn.closest('.order-card, .waiter-card');
+        card.style.transform = "scale(0.8) opacity(0)";
+        card.style.opacity = "0";
+        setTimeout(() => card.remove(), 400);
     }
 
-    setInterval(refreshData, 5000);
-    refreshData();
+    setInterval(fetchData, 5000);
+    fetchData();
 </script>
 </body>
 </html>
