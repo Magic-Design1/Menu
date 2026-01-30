@@ -1,186 +1,176 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Dashboard - لوحة التحكم</title>
+    <title>Elite Admin - POS System</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --bg: #f1f5f9; --text: #0f172a; }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); margin: 0; color: var(--text);
-            padding: 15px; direction: ltr; /* اللغة الإنجليزية للواجهة لسهولة القراءة التقنية */
-        }
+        body { background: var(--bg); margin: 0; padding: 15px; color: var(--text); }
 
-        /* Top Navigation */
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px; background: white; padding: 15px 20px;
-            border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        /* Stats Bar */
+        .stats-bar {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px; margin-bottom: 25px;
         }
-        .logo { font-weight: 800; font-size: 1.3rem; color: var(--primary); }
-        .status-badge { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; }
-        .dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
+        .stat-card {
+            background: white; padding: 15px; border-radius: 18px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center;
+            border-bottom: 4px solid var(--primary);
+        }
+        .stat-card small { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .stat-card div { font-size: 1.3rem; font-weight: 800; margin-top: 5px; }
 
-        /* Stats Cards */
-        .stats-grid { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 15px; margin-bottom: 25px; 
-        }
-        .stat-box { background: white; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #e2e8f0; }
-        .stat-box small { color: #64748b; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-        .stat-box div { font-size: 1.4rem; font-weight: 800; margin-top: 5px; }
+        /* Sections Layout */
+        .admin-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 1024px) { .admin-container { grid-template-columns: 350px 1fr; } }
 
-        /* Layout Grid */
-        .main-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 1024px) { .main-layout { grid-template-columns: 350px 1fr; } }
+        /* Waiter Alerts */
+        .section-title { font-size: 1rem; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .waiter-card {
+            background: #fff1f2; border: 1px solid #fecaca; padding: 15px;
+            border-radius: 18px; margin-bottom: 12px; display: flex;
+            justify-content: space-between; align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+        .waiter-card b { color: #be123c; font-size: 0.95rem; }
 
-        /* Waiter Section */
-        .waiter-column { display: flex; flex-direction: column; gap: 12px; }
-        .waiter-card { 
-            background: #fee2e2; border: 2px solid #fecaca; color: #b91c1c;
-            padding: 20px; border-radius: 20px; position: relative;
-            animation: slideIn 0.3s ease; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
+        /* Order Cards */
+        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .order-card {
+            background: white; border-radius: 24px; padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #e2e8f0;
+            position: relative; transition: 0.3s;
         }
-        .waiter-card h4 { margin: 0; font-size: 1.1rem; }
-        .close-call { position: absolute; top: 15px; right: 15px; cursor: pointer; border: none; background: white; border-radius: 50%; width: 25px; height: 25px; font-weight: 800; }
+        .order-card.new { animation: pulseGlow 2s infinite; border-color: var(--primary); }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 0px rgba(37,99,235,0); } 50% { box-shadow: 0 0 15px rgba(37,99,235,0.2); } 100% { box-shadow: 0 0 0px rgba(37,99,235,0); } }
 
-        /* Order Cards Grid */
-        .orders-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; 
-        }
-        .order-card { 
-            background: white; border-radius: 25px; padding: 20px; 
-            border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            transition: transform 0.2s;
-        }
-        .order-card:hover { transform: translateY(-3px); }
-        .order-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .table-tag { background: var(--primary); color: white; padding: 6px 12px; border-radius: 10px; font-weight: 800; }
+        .order-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .table-no { background: var(--text); color: white; padding: 5px 12px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; }
         
-        .items-list { margin: 15px 0; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
-        .item-line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; }
-        .qty-badge { background: #f1f5f9; padding: 2px 8px; border-radius: 6px; font-weight: 800; margin-right: 5px; }
+        .item-list { list-style: none; padding: 0; margin: 15px 0; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
+        .item-list li { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.9rem; }
+        .item-qty { font-weight: 800; color: var(--primary); margin-right: 8px; }
 
-        .order-foot { border-top: 1px solid #f1f5f9; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .total-price { font-weight: 800; font-size: 1.1rem; }
+        .btn-done {
+            width: 100%; padding: 12px; border: none; border-radius: 14px;
+            background: var(--success); color: white; font-weight: 800;
+            cursor: pointer; transition: 0.2s; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-done:hover { opacity: 0.9; transform: scale(0.98); }
+        .btn-clear { background: white; border: 1px solid #fecaca; color: #be123c; padding: 5px 10px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.7rem; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">Elite Operations</div>
-    <div class="status-badge"><div class="dot"></div> <span id="sync-text">LIVE SYNC</span></div>
-</header>
-
-<div class="stats-grid">
-    <div class="stat-box"><small>Active Orders</small><div id="count-orders">0</div></div>
-    <div class="stat-box"><small>Waiter Calls</small><div id="count-calls" style="color: var(--danger);">0</div></div>
-    <div class="stat-box"><small>Total Sales</small><div id="count-sales">$0.00</div></div>
+<div class="stats-bar">
+    <div class="stat-card"><small>Total Orders</small><div id="stat-count">0</div></div>
+    <div class="stat-card"><small>Daily Revenue</small><div id="stat-rev">$0.00</div></div>
+    <div class="stat-card"><small>Waiter Calls</small><div id="stat-calls" style="color:var(--danger)">0</div></div>
 </div>
 
-<div class="main-layout">
-    <div class="waiter-column">
-        <h3 style="margin: 0 0 10px 10px;">🛎️ Waiter Calls</h3>
+<div class="admin-container">
+    <div class="waiter-section">
+        <div class="section-title">🛎️ Waiter Assistance</div>
         <div id="waiter-feed"></div>
     </div>
 
-    <div>
-        <h3 style="margin: 0 0 20px 10px;">👨‍🍳 Kitchen Queue</h3>
+    <div class="orders-section">
+        <div class="section-title">👨‍🍳 Kitchen Display (Active)</div>
         <div id="orders-feed" class="orders-grid"></div>
     </div>
 </div>
 
-<audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+<audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5gZRkskMLq3ZetRFbjLXZV7F21gMY3RgbQGj-e1nXdDeY1admAZbLDeqWErEtK3uHJA/exec";
-    let lastKnownID = 0;
+    let lastId = 0;
 
-    async function updateUI() {
+    async function refreshData() {
         try {
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             
-            // Filter Data
-            const calls = data.filter(d => d.type === 'waiter');
-            const orders = data.filter(d => d.type === 'order');
+            // تصفية البيانات (فقط التي حالتها ليست Completed)
+            const activeOrders = data.filter(d => d.type === 'order' && d.status !== 'Completed');
+            const waiterCalls = data.filter(d => d.type === 'waiter');
+            const totalRevenue = data.filter(d => d.type === 'order').reduce((s, o) => s + parseFloat(o.total.replace('$', '')), 0);
 
-            // Play sound if new item added
-            if (data.length > 0 && data[data.length-1].id > lastKnownID) {
-                if(lastKnownID !== 0) document.getElementById('alert-sound').play().catch(e => {});
-                lastKnownID = data[data.length-1].id;
+            // صوت تنبيه عند وجود جديد
+            if(data.length > 0 && data[data.length-1].id > lastId) {
+                if(lastId !== 0) document.getElementById('alertSound').play().catch(e => {});
+                lastId = data[data.length-1].id;
             }
 
-            renderStats(orders, calls);
-            renderWaiter(calls);
-            renderOrders(orders);
-            
-            document.getElementById('sync-text').innerText = "SYSTEM LIVE";
-        } catch (e) {
-            document.getElementById('sync-text').innerText = "CONNECTING...";
-        }
+            updateStats(activeOrders.length, totalRevenue, waiterCalls.length);
+            renderOrders(activeOrders);
+            renderWaiters(waiterCalls);
+        } catch (e) { console.log("Sync Error"); }
     }
 
-    function renderStats(orders, calls) {
-        document.getElementById('count-orders').innerText = orders.length;
-        document.getElementById('count-calls').innerText = calls.length;
-        const total = orders.reduce((sum, o) => sum + parseFloat(o.total.replace('$', '') || 0), 0);
-        document.getElementById('count-sales').innerText = "$" + total.toFixed(2);
+    function updateStats(count, rev, calls) {
+        document.getElementById('stat-count').innerText = count;
+        document.getElementById('stat-rev').innerText = "$" + rev.toFixed(2);
+        document.getElementById('stat-calls').innerText = calls;
     }
 
-    function renderWaiter(calls) {
+    function renderWaiters(calls) {
         const feed = document.getElementById('waiter-feed');
-        if(calls.length === 0) {
-            feed.innerHTML = '<p style="opacity:0.5; padding:20px;">No active calls</p>';
-            return;
-        }
         feed.innerHTML = calls.reverse().map(c => `
             <div class="waiter-card">
-                <button class="close-call" onclick="this.parentElement.remove()">✕</button>
-                <small>URGENT ASSISTANCE</small>
-                <h4>Table ${c.table}</h4>
+                <b>📍 Table ${c.table}</b>
+                <button class="btn-clear" onclick="markDone('${c.id}', 'WaiterDone', this)">CLEAR</button>
             </div>
-        `).join('');
+        `).join('') || '<p style="opacity:0.5; font-size:0.8rem;">No active calls</p>';
     }
 
     function renderOrders(orders) {
         const feed = document.getElementById('orders-feed');
-        if(orders.length === 0) {
-            feed.innerHTML = '<p style="opacity:0.5;">Kitchen is clear</p>';
-            return;
-        }
         feed.innerHTML = orders.reverse().map(o => `
-            <div class="order-card">
-                <div class="order-head">
-                    <span class="table-tag">Table ${o.table}</span>
-                    <span style="font-size:0.75rem; color:#64748b;">${new Date(o.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            <div class="order-card ${Date.now() - o.id < 60000 ? 'new' : ''}">
+                <div class="order-header">
+                    <span class="table-no">TABLE ${o.table}</span>
+                    <span style="font-size:0.7rem; font-weight:700; color:#94a3b8;">${new Date(o.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                 </div>
-                <div class="items-list">
-                    ${o.items.map(i => `
-                        <div class="item-line">
-                            <span><span class="qty-badge">${i.qty}</span> ${i.name}</span>
-                        </div>
-                    `).join('')}
+                <ul class="item-list">
+                    ${o.items.map(i => `<li><span><span class="item-qty">${i.qty}x</span> ${i.name}</span></li>`).join('')}
+                </ul>
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:800;">
+                    <span>Total:</span><span>${o.total}</span>
                 </div>
-                <div class="order-foot">
-                    <span style="font-size:0.7rem; font-weight:800; color:var(--primary);">${o.status}</span>
-                    <span class="total-price">${o.total}</span>
-                </div>
+                <button class="btn-done" onclick="markDone('${o.id}', 'Completed', this)">
+                    ✅ MARK AS DONE
+                </button>
             </div>
-        `).join('');
+        `).join('') || '<p style="opacity:0.5;">Waiting for orders...</p>';
     }
 
-    // Auto update every 5 seconds
-    setInterval(updateUI, 5000);
-    updateUI();
+    async function markDone(id, newStatus, btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Processing...";
+        btn.disabled = true;
+
+        // في النسخة السحابية، سنرسل طلب تحديث للشيت
+        // للتجربة الفورية، سنقوم بإخفاء العنصر بصرياً أولاً
+        btn.closest('.order-card, .waiter-card').style.opacity = "0.3";
+        btn.closest('.order-card, .waiter-card').style.pointerEvents = "none";
+
+        // ملحوظة: لإتمام المسح فعلياً من جوجل شيت، يجب إضافة دالة UPDATE في الـ Script
+        // لكن حالياً سنعتمد على الإخفاء البصري لحين تحديث الـ Script الخاص بك
+        setTimeout(() => {
+            btn.closest('.order-card, .waiter-card').remove();
+        }, 500);
+    }
+
+    setInterval(refreshData, 5000);
+    refreshData();
 </script>
 </body>
 </html>
