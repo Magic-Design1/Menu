@@ -3,251 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Admin - Responsive</title>
+    <title>Elite Admin - Kitchen Display</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --primary: #2563eb; --dark: #0f172a; --bg: #f8fafc; --success: #10b981; --danger: #ef4444; }
-        
+        :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --bg: #f1f5f9; --text: #0f172a; }
         * { box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--dark); overflow-x: hidden; }
-
-        /* Navbar */
-        .admin-nav { 
-            background: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000;
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            color: var(--text);
+            padding: 15px;
         }
-        .admin-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1rem; color: var(--primary); }
-        #status-live { font-size: 0.65rem; padding: 4px 10px; border-radius: 50px; background: #dcfce7; color: #15803d; font-weight: 800; }
 
-        /* Container */
-        .main-container { padding: 15px; max-width: 1400px; margin: 0 auto; }
-
-        /* Stats Grid */
-        .stats-grid { 
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; 
+        /* Header UI */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 5px;
         }
-        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
-
-        .stat-card { 
-            background: white; padding: 15px; border-radius: 18px; text-align: center; 
-            border: 1px solid #f1f5f9; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        header h1 { font-size: 1.4rem; margin: 0; font-weight: 800; }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .stat-card b { font-size: 0.7rem; color: #64748b; display: block; margin-bottom: 5px; }
-        .stat-card span { font-size: 1.2rem; font-weight: 800; }
+        .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* Layout Layout */
-        .content-layout { display: flex; flex-direction: column; gap: 20px; }
-        @media (min-width: 992px) { .content-layout { flex-direction: row; align-items: flex-start; } }
+        /* Responsive Grid */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* عمود واحد للموبايل */
+            gap: 20px;
+        }
 
-        .orders-column { flex: 2; width: 100%; }
-        .management-column { flex: 1; width: 100%; position: sticky; top: 80px; }
+        @media (min-width: 992px) {
+            .admin-grid { grid-template-columns: 350px 1fr; } /* تقسيم الشاشة للكمبيوتر */
+        }
 
-        .admin-box { background: white; border-radius: 20px; padding: 18px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        .admin-box h2 { font-size: 1rem; margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .panel {
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-        /* Waiter Alerts */
-        .waiter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-        .call-card { background: #fff1f2; border: 1px solid #fecdd3; padding: 12px; border-radius: 15px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
-        .call-card b { color: #be123c; font-size: 0.9rem; }
-        .btn-done { background: white; border: 1px solid #fecdd3; border-radius: 8px; padding: 5px; cursor: pointer; color: #be123c; font-weight: 700; font-size: 0.75rem; }
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
 
-        /* Order Items */
-        .order-item { background: #f8fafc; border-radius: 15px; padding: 15px; margin-bottom: 12px; border-left: 4px solid var(--primary); }
-        .order-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; }
-        .order-details { font-size: 0.9rem; margin-bottom: 10px; font-weight: 600; color: #475569; }
-        .order-footer { display: flex; justify-content: space-between; align-items: center; }
+        /* Waiter Alert Card */
+        .waiter-card {
+            background: #fee2e2;
+            border: 2px solid #fecaca;
+            color: #b91c1c;
+            padding: 15px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+            animation: bounceIn 0.5s ease;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-        /* Forms */
-        .input-group { margin-bottom: 12px; }
-        label { font-size: 0.75rem; font-weight: 700; margin-bottom: 5px; display: block; color: #64748b; }
-        input, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.85rem; }
-        .btn-p { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 5px; }
+        /* Order Card UI */
+        .order-card {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        .order-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 6px;
+            background: var(--primary);
+        }
 
-        /* Floating Sound Toggle */
-        .sound-status { font-size: 0.7rem; color: #64748b; margin-top: 10px; text-align: center; }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .table-no { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .order-time { font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
+
+        .items-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+        }
+        .items-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+        .items-list li:last-child { border-bottom: none; }
+        .qty { font-weight: 800; color: var(--text); margin-right: 10px; }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .total-price { font-weight: 800; font-size: 1.1rem; color: var(--text); }
+        .status-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: #e0e7ff;
+            color: #4338ca;
+            text-transform: uppercase;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.5;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
 
-<nav class="admin-nav">
-    <div class="admin-logo">
-        <div style="background:var(--primary); color:white; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.8rem;">E</div>
-        <span id="nav-name">Elite Admin</span>
+<header>
+    <h1>Elite Console</h1>
+    <div class="status-badge">
+        <div class="dot"></div>
+        <span id="sync-text">LIVE SYNC</span>
     </div>
-    <div id="status-live">● LIVE</div>
-</nav>
+</header>
 
-<div class="main-container">
-    
-    <div class="stats-grid">
-        <div class="stat-card"><b>Revenue</b><span id="stat-rev">$0.00</span></div>
-        <div class="stat-card" style="border-bottom-color: var(--primary)"><b>Active</b><span id="stat-active">0</span></div>
-        <div class="stat-card" style="border-bottom-color: var(--danger)"><b>Calls</b><span id="stat-calls">0</span></div>
-    </div>
-
-    <div class="admin-box" id="waiter-box" style="display:none; background: #fff1f2; border-color: #fecdd3;">
-        <h2>🛎️ Waiter Calls</h2>
-        <div id="waiter-list" class="waiter-grid"></div>
+<div class="admin-grid">
+    <div class="panel">
+        <div class="panel-title">🛎️ Waiter Calls</div>
+        <div id="waiter-list">
+            </div>
     </div>
 
-    <div class="content-layout">
-        <div class="orders-column">
-            <div class="admin-box">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2 style="margin:0;">🍳 Kitchen Queue</h2>
-                    <button onclick="clearFinished()" style="font-size:0.7rem; border:none; background:none; color:var(--primary); font-weight:700; cursor:pointer;">Clear Done</button>
-                </div>
-                <div id="order-list"></div>
-            </div>
-        </div>
-
-        <div class="management-column">
-            <div class="admin-box">
-                <h2>✨ Add Product</h2>
-                <div class="input-group"><label>Name</label><input type="text" id="p-name"></div>
-                <div class="input-group"><label>Price ($)</label><input type="number" id="p-price"></div>
-                <div class="input-group">
-                    <label>Category</label>
-                    <select id="p-cat-select" onchange="toggleNewCat(this.value)"></select>
-                    <input type="text" id="p-new-cat" placeholder="New Cat Name" style="display:none; margin-top:8px;">
-                </div>
-                <div class="input-group"><label>Image</label><input type="file" id="p-img" accept="image/*"></div>
-                <button class="btn-p" onclick="addItem()">Add to Menu</button>
-            </div>
-
-            <div class="admin-box">
-                <h2>🎨 Branding</h2>
-                <div class="input-group"><label>Brand Name</label><input type="text" id="set-name"></div>
-                <div class="input-group"><label>Theme Color</label><input type="color" id="set-color" style="height:40px; padding:2px;"></div>
-                <button class="btn-p" onclick="saveSettings()" style="background:var(--dark)">Save Settings</button>
-                <div class="sound-status">🔊 Sound Alerts Active</div>
-            </div>
+    <div class="panel">
+        <div class="panel-title">📋 Active Orders</div>
+        <div id="order-list">
+            <div class="empty-state">Waiting for new orders...</div>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('elite_v5_db')) || { 
-        name: 'Elite Bistro', primaryColor: '#2563eb', products: [], orders: [], waiterCalls: [], categories: ['meals', 'drinks', 'sweets']
-    };
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsS6zErft-eK55CndjMFwTO-kHsMX-WxeXvQHgwJ1W_eHotYOMmn715lKuw2IKsbPwBA/exec";
+    
+    // لتجنب تكرار التنبيهات الصوتية
+    let lastKnownCount = 0;
+    const alertSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
-    const notifySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    async function updateDashboard() {
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const data = await response.json();
+            
+            const orders = data.filter(d => d.items);
+            const waiterCalls = data.filter(d => d.type === 'waiter');
 
-    function sync() {
-        localStorage.setItem('elite_v5_db', JSON.stringify(db));
-        window.dispatchEvent(new Event('storage'));
-        render();
+            // تشغيل صوت عند وجود طلب جديد
+            if (data.length > lastKnownCount && lastKnownCount !== 0) {
+                alertSound.play().catch(e => console.log("Sound blocked"));
+            }
+            lastKnownCount = data.length;
+
+            renderWaiterCalls(waiterCalls);
+            renderOrders(orders);
+
+            document.getElementById('sync-text').innerText = "LIVE SYNC";
+        } catch (error) {
+            document.getElementById('sync-text').innerText = "OFFLINE";
+        }
     }
 
-    function toggleNewCat(val) {
-        document.getElementById('p-new-cat').style.display = (val === 'NEW') ? 'block' : 'none';
-    }
+    function renderWaiterCalls(calls) {
+        const container = document.getElementById('waiter-list');
+        if (calls.length === 0) {
+            container.innerHTML = '<div style="font-size:0.8rem; opacity:0.6; padding:10px;">No active calls.</div>';
+            return;
+        }
 
-    function render() {
-        document.getElementById('nav-name').innerText = db.name;
-        document.documentElement.style.setProperty('--primary', db.primaryColor);
-        
-        // Update Stats
-        const activeOrders = db.orders.filter(o => o.status === 'Pending');
-        const revenue = db.orders.filter(o => o.status === 'Finished').reduce((a, b) => a + parseFloat(b.total.replace('$', '')), 0);
-        document.getElementById('stat-rev').innerText = "$" + revenue.toFixed(2);
-        document.getElementById('stat-active').innerText = activeOrders.length;
-        document.getElementById('stat-calls').innerText = db.waiterCalls.length;
-
-        // Render Categories Select
-        const select = document.getElementById('p-cat-select');
-        let cats = db.categories.map(c => `<option value="${c}">${c.toUpperCase()}</option>`).join('');
-        select.innerHTML = cats + `<option value="NEW">+ NEW CAT</option>`;
-
-        // Render Waiter Calls
-        const wBox = document.getElementById('waiter-box');
-        if(db.waiterCalls.length > 0) {
-            wBox.style.display = 'block';
-            document.getElementById('waiter-list').innerHTML = db.waiterCalls.map(c => `
-                <div class="call-card">
-                    <b>TABLE ${c.table}</b>
-                    <button class="btn-done" onclick="clearCall(${c.id})">Clear</button>
+        container.innerHTML = calls.reverse().map(c => `
+            <div class="waiter-card">
+                <div>
+                    <div style="font-size:0.7rem; opacity:0.8; font-weight:700;">ASSISTANCE NEEDED</div>
+                    <div style="font-size:1.1rem;">Table ${c.table}</div>
                 </div>
-            `).join('');
-        } else { wBox.style.display = 'none'; }
+                <button onclick="this.parentElement.style.display='none'" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">✕</button>
+            </div>
+        `).join('');
+    }
 
-        // Render Orders
-        document.getElementById('order-list').innerHTML = db.orders.map(o => `
-            <div class="order-item" style="${o.status === 'Finished' ? 'opacity:0.6; border-color:#cbd5e1' : ''}">
+    function renderOrders(orders) {
+        const container = document.getElementById('order-list');
+        if (orders.length === 0) {
+            container.innerHTML = '<div class="empty-state">No active orders in the kitchen.</div>';
+            return;
+        }
+
+        container.innerHTML = orders.reverse().map(o => `
+            <div class="order-card">
                 <div class="order-header">
-                    <b style="color:var(--primary)">T-${o.table}</b>
-                    <span>${o.time}</span>
+                    <span class="table-no">TABLE ${o.table}</span>
+                    <span class="order-time">${new Date(o.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                 </div>
-                <div class="order-details">${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}</div>
+                
+                <ul class="items-list">
+                    ${o.items.map(item => `
+                        <li>
+                            <span><span class="qty">${item.qty}x</span> ${item.name}</span>
+                            <span style="font-size:0.8rem; color:#64748b;">$${(item.price * item.qty).toFixed(2)}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+
                 <div class="order-footer">
-                    <b style="font-size:1.1rem">${o.total}</b>
-                    ${o.status === 'Pending' ? 
-                    `<button class="btn-p" style="width:auto; padding:8px 15px; margin:0; font-size:0.75rem; background:var(--success)" onclick="updateStatus(${o.id}, 'Finished')">Ready ✓</button>` : 
-                    `<span style="color:var(--success); font-weight:800; font-size:0.8rem;">SERVED</span>`}
+                    <span class="status-tag">${o.status || 'Pending'}</span>
+                    <span class="total-price">${o.total}</span>
                 </div>
             </div>
-        `).reverse().join('') || '<p style="text-align:center; padding:20px; opacity:0.5;">No orders yet.</p>';
+        `).join('');
     }
 
-    function addItem() {
-        const name = document.getElementById('p-name').value;
-        const price = document.getElementById('p-price').value;
-        const file = document.getElementById('p-img').files[0];
-        let cat = document.getElementById('p-cat-select').value;
-
-        if(!name || !price || !file) return Swal.fire('Error', 'Fill all fields', 'error');
-        if(cat === 'NEW') {
-            cat = document.getElementById('p-new-cat').value.toLowerCase();
-            if(!db.categories.includes(cat)) db.categories.push(cat);
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            db.products.push({ id: Date.now(), name, price, category: cat, img: e.target.result, inStock: true });
-            sync();
-            Swal.fire({ title: 'Success', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-            document.getElementById('p-name').value = '';
-            document.getElementById('p-price').value = '';
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function updateStatus(id, stat) {
-        const idx = db.orders.findIndex(o => o.id === id);
-        if(idx !== -1) { db.orders[idx].status = stat; sync(); }
-    }
-
-    function clearCall(id) {
-        db.waiterCalls = db.waiterCalls.filter(c => c.id !== id);
-        sync();
-    }
-
-    function clearFinished() {
-        db.orders = db.orders.filter(o => o.status === 'Pending');
-        sync();
-    }
-
-    function saveSettings() {
-        db.name = document.getElementById('set-name').value || db.name;
-        db.primaryColor = document.getElementById('set-color').value || db.primaryColor;
-        sync();
-        Swal.fire('Updated', '', 'success');
-    }
-
-    window.addEventListener('storage', () => {
-        const newData = JSON.parse(localStorage.getItem('elite_v5_db'));
-        if(newData.orders.length > db.orders.length || newData.waiterCalls.length > db.waiterCalls.length) {
-            notifySound.play().catch(e => {});
-        }
-        db = newData;
-        render();
-    });
-
-    // Initial Sync
-    document.getElementById('set-name').value = db.name;
-    document.getElementById('set-color').value = db.primaryColor;
-    render();
+    // تحديث كل 5 ثوانٍ
+    setInterval(updateDashboard, 5000);
+    updateDashboard(); // تشغيل فوري عند الفتح
 </script>
 </body>
 </html>
