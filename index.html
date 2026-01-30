@@ -15,18 +15,18 @@
             background: var(--bg); 
             margin: 0; 
             color: var(--text); 
-            padding-bottom: 120px; /* مساحة للسلة */
+            padding-bottom: 120px;
         }
 
-        /* Header UI - Improved */
+        /* Header & Cover */
         header { 
-            height: 160px; /* تصغير الكوفر قليلاً */
+            height: 160px; 
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1000') center/cover;
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             position: relative; 
             border-radius: 0 0 40px 40px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 45px; /* مساحة للأزرار تحت الكوفر */
+            margin-bottom: 45px;
         }
 
         .theme-picker { 
@@ -49,10 +49,10 @@
             font-size: 0.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
         }
 
-        /* Tabs UI - Floating over the edge */
+        /* Tabs */
         .tabs { 
             display: flex; background: var(--white); 
-            margin: -40px 20px 20px; /* رفع الأزرار لتداخل مع الكوفر */
+            margin: -40px 20px 20px; 
             border-radius: 20px; padding: 6px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
             position: relative; z-index: 100;
@@ -65,11 +65,11 @@
         }
         .tab-btn.active { background: var(--primary); color: white; }
 
-        /* Container & Cards */
         .container { padding: 0 20px; display: none; }
         .container.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Product Cards */
         .card { background: var(--white); border-radius: 24px; padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
         .card img { width: 95px; height: 95px; border-radius: 18px; object-fit: cover; background: #f1f5f9; }
         .card-info { flex: 1; }
@@ -81,7 +81,7 @@
         .qty-btn { width: 30px; height: 30px; border-radius: 8px; border: none; background: var(--white); font-weight: 800; cursor: pointer; color: var(--text); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .add-btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.8rem; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
 
-        /* Square Cart Button */
+        /* Floating Cart */
         .cart-square { 
             position: fixed; bottom: 30px; right: 25px; width: 70px; height: 70px; 
             background: var(--text); color: white; border-radius: 22px; 
@@ -90,7 +90,7 @@
         }
         .cart-badge { position: absolute; top: -10px; left: -10px; background: var(--primary); color: white; min-width: 26px; height: 26px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2px solid var(--white); }
 
-        /* Track UI */
+        /* Tracking UI */
         .order-row { background: white; padding: 18px; border-radius: 20px; margin-bottom: 12px; border-left: 5px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .status-pill { font-size: 0.7rem; padding: 4px 12px; border-radius: 50px; background: #f1f5f9; font-weight: 800; text-transform: uppercase; color: var(--primary); }
     </style>
@@ -107,7 +107,7 @@
 </header>
 
 <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('menu', this)">Browse Menu</button>
+    <button class="tab-btn active" onclick="switchTab('menu', this)">Menu</button>
     <button class="tab-btn" onclick="switchTab('track', this)">My Orders</button>
 </div>
 
@@ -116,7 +116,7 @@
 </div>
 
 <div id="track-view" class="container">
-    <h3 style="margin: 0 0 15px 5px; font-size: 1.1rem;">Track Your Orders</h3>
+    <h3 style="margin: 0 0 15px 5px;">Tracking Orders</h3>
     <div id="my-orders-list"></div>
 </div>
 
@@ -126,6 +126,7 @@
 </div>
 
 <script>
+    // الرابط الخاص بك مدمج هنا
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5gZRkskMLq3ZetRFbjLXZV7F21gMY3RgbQGj-e1nXdDeY1admAZbLDeqWErEtK3uHJA/exec";
     const TABLE_ID = "05";
 
@@ -182,16 +183,31 @@
         const item = menuItems.find(x => x.id === id);
         const qty = parseInt(document.getElementById(`qty-disp-${id}`).innerText);
         if(cart[id]) cart[id].qty += qty; else cart[id] = {...item, qty: qty};
-        
         document.getElementById(`qty-disp-${id}`).innerText = "1";
         updateCartUI();
-        Swal.fire({ title: 'Added to cart', icon: 'success', toast: true, position: 'top', showConfirmButton: false, timer: 1500 });
+        Swal.fire({ title: 'Added!', icon: 'success', toast: true, position: 'top', showConfirmButton: false, timer: 1000 });
     }
 
     function updateCartUI() {
         const count = Object.values(cart).reduce((a, b) => a + b.qty, 0);
         document.getElementById('cart-square-btn').style.display = count > 0 ? 'flex' : 'none';
         document.getElementById('cart-badge-count').innerText = count;
+    }
+
+    async function callWaiter() {
+        Swal.fire({ title: '🛎️ Waiter Called', text: 'Someone will be with you shortly.', icon: 'info', timer: 2000, showConfirmButton: false });
+        
+        const payload = {
+            type: 'waiter', // إرسال النوع بوضوح للأدمن
+            table: TABLE_ID,
+            items: [],
+            total: "CALL",
+            id: Date.now(),
+            status: 'Pending'
+        };
+
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+        .catch(err => console.log("Silent error"));
     }
 
     async function openCheckout() {
@@ -201,23 +217,26 @@
         const total = subtotal + tax;
 
         const { isConfirmed } = await Swal.fire({
-            title: 'Order Summary',
-            html: `<div style="text-align:left; font-size:0.9rem; line-height:1.6;">
-                ${items.map(i => `<div style="display:flex; justify-content:space-between;"><span>${i.qty}x ${i.name}</span> <span>$${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
-                <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
-                <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span> <span>$${subtotal.toFixed(2)}</span></div>
-                <div style="display:flex; justify-content:space-between;"><span>VAT (14%):</span> <span>$${tax.toFixed(2)}</span></div>
-                <div style="display:flex; justify-content:space-between; font-weight:800; color:var(--primary); font-size:1.1rem; margin-top:5px;">
-                    <span>Grand Total:</span> <span>$${total.toFixed(2)}</span>
-                </div>
+            title: 'Confirm Order',
+            html: `<div style="text-align:left; font-size:0.9rem;">
+                ${items.map(i => `<div>${i.qty}x ${i.name} - $${(i.price*i.qty).toFixed(2)}</div>`).join('')}
+                <hr>
+                <b>Total (incl. 14% VAT): $${total.toFixed(2)}</b>
             </div>`,
-            showCancelButton: true, confirmButtonText: 'Confirm Order', confirmButtonColor: '#0f172a'
+            showCancelButton: true, confirmButtonText: 'Order Now'
         });
 
         if(isConfirmed) {
-            Swal.fire({ title: 'Sending...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Sending...', didOpen: () => Swal.showLoading() });
             const oId = Date.now();
-            const payload = { type: 'order', id: oId, table: TABLE_ID, items: items, total: "$" + total.toFixed(2), status: 'Pending' };
+            const payload = { 
+                type: 'order', 
+                id: oId, 
+                table: TABLE_ID, 
+                items: items, 
+                total: "$" + total.toFixed(2), 
+                status: 'Pending' 
+            };
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -225,8 +244,8 @@
                 localStorage.setItem('elite_history', JSON.stringify(orderHistory));
                 cart = {};
                 updateCartUI();
-                Swal.fire('Ordered!', 'Kitchen is preparing your meal.', 'success');
-            } catch(e) { Swal.fire('Error', 'Network error. Try again.', 'error'); }
+                Swal.fire('Sent!', 'Kitchen is preparing your meal.', 'success');
+            } catch(e) { Swal.fire('Error', 'Failed to connect.', 'error'); }
         }
     }
 
@@ -235,29 +254,16 @@
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             const filtered = data.filter(o => orderHistory.includes(Number(o.id)));
-            
             document.getElementById('my-orders-list').innerHTML = filtered.reverse().map(o => `
                 <div class="order-row">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b style="font-size:0.9rem;">Order #${String(o.id).slice(-4)}</b>
+                    <div style="display:flex; justify-content:space-between;">
+                        <b>#${String(o.id).slice(-4)}</b>
                         <span class="status-pill">${o.status}</span>
                     </div>
-                    <div style="font-size:0.8rem; margin-top:8px; color:#64748b; font-weight:600;">${o.total} • ${o.items.length} Items</div>
+                    <div style="font-size:0.8rem; margin-top:5px;">${o.total}</div>
                 </div>
-            `).join('') || '<p style="text-align:center; opacity:0.5; margin-top:30px;">No active orders yet.</p>';
-        } catch(e) { console.error("Sync error"); }
-    }
-
-    async function callWaiter() {
-        // رسالة فورية للعميل لعدم الشعور بالتأخير
-        Swal.fire({ title: '🛎️ Waiter Called', text: 'Someone will be with you shortly.', icon: 'info', timer: 2000, showConfirmButton: false });
-        
-        // الإرسال في الخلفية
-        fetch(SCRIPT_URL, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            body: JSON.stringify({type:'waiter', table: TABLE_ID})
-        }).catch(err => console.log("Silent error sending waiter call"));
+            `).join('') || '<p style="text-align:center;">No orders yet.</p>';
+        } catch(e) { }
     }
 
     const savedColor = localStorage.getItem('elite_theme_color');
@@ -266,4 +272,3 @@
 </script>
 </body>
 </html>
-
