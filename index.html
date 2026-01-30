@@ -27,7 +27,6 @@
 
         /* Category Filter Buttons */
         .category-scroller { display: flex; overflow-x: auto; padding: 10px 20px; gap: 10px; scrollbar-width: none; }
-        .category-scroller::-webkit-scrollbar { display: none; }
         .cat-btn { padding: 10px 20px; background: #f1f5f9; border-radius: 50px; white-space: nowrap; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; color: #475569; }
         .cat-btn.active { background: var(--text); color: white; border-color: var(--text); }
         
@@ -78,11 +77,11 @@
 </div>
 
 <div id="menu-controls">
-    <div class="category-scroller">
+    <div class="category-scroller" id="cat-tabs">
         <button class="cat-btn active" onclick="filterCat('all', this)">All Items</button>
-        <button class="cat-btn" onclick="filterCat('meals', this)">🍔 Main Meals</button>
-        <button class="cat-btn" onclick="filterCat('drinks', this)">☕ Cold Drinks</button>
-        <button class="cat-btn" onclick="filterCat('sweets', this)">🍰 Desserts</button>
+        <button class="cat-btn" onclick="filterCat('meals', this)">🍔 Meals</button>
+        <button class="cat-btn" onclick="filterCat('drinks', this)">☕ Drinks</button>
+        <button class="cat-btn" onclick="filterCat('sweets', this)">🍰 Sweets</button>
     </div>
 
     <div class="filter-toggle">
@@ -103,24 +102,25 @@
 </div>
 
 <script>
-    // Updated Products Data organized by Category
-    const productsData = [
-        // MEALS
-        { id: 1, name: 'Premium Cheeseburger', category: 'meals', price: 12.90, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500', inStock: true },
-        { id: 2, name: 'Italian Margherita Pizza', category: 'meals', price: 14.50, img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=500', inStock: true },
-        { id: 3, name: 'Crispy Chicken Wings', category: 'meals', price: 9.90, img: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?q=80&w=500', inStock: false },
-        
-        // DRINKS
-        { id: 4, name: 'Iced Caramel Latte', category: 'drinks', price: 5.50, img: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=500', inStock: true },
-        { id: 5, name: 'Fresh Orange Juice', category: 'drinks', price: 4.00, img: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?q=80&w=500', inStock: true },
-        { id: 6, name: 'Classic Mojito', category: 'drinks', price: 6.50, img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=500', inStock: true },
-        
-        // SWEETS
-        { id: 7, name: 'Chocolate Lava Cake', category: 'sweets', price: 7.50, img: 'https://images.unsplash.com/photo-1624353335558-43d95f8a8f61?q=80&w=500', inStock: true },
-        { id: 8, name: 'New York Cheesecake', category: 'sweets', price: 8.00, img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=500', inStock: false }
+    // --- 1. إعدادات رقم الطاولة ---
+    const tableNum = "12"; // تقدر تغيرها لأي رقم طاولة تانية
+
+    // --- 2. بيانات تجريبية (لو الأدمن لسه مضافش حاجة) ---
+    const defaultProducts = [
+        { id: 101, name: 'Double Cheese Burger', category: 'meals', price: 15.00, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500', inStock: true },
+        { id: 102, name: 'Pepperoni Pizza', category: 'meals', price: 18.50, img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=500', inStock: true },
+        { id: 103, name: 'Coca Cola', category: 'drinks', price: 3.00, img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=500', inStock: true }
     ];
 
-    let db = { products: productsData, primaryColor: '#2563eb', orders: [] };
+    let db = JSON.parse(localStorage.getItem('elite_v5_db')) || { 
+        name: 'ELITE MENU', 
+        primaryColor: '#2563eb', 
+        products: defaultProducts, 
+        orders: [], 
+        waiterCalls: [],
+        categories: ['meals', 'drinks', 'sweets']
+    };
+
     let cart = {};
     let currentCat = 'all';
 
@@ -132,16 +132,19 @@
 
     function saveData() {
         localStorage.setItem('elite_v5_db', JSON.stringify(db));
+        window.dispatchEvent(new Event('storage')); // مهم للربط
     }
 
     function sync() {
         const live = localStorage.getItem('elite_v5_db');
         if(live) { 
             db = JSON.parse(live);
-            if(db.primaryColor) {
-                document.documentElement.style.setProperty('--primary', db.primaryColor);
-                document.getElementById('theme-color').value = db.primaryColor;
-            }
+            // لو الأدمن مسح كل المنتجات، حط الأمثلة تاني عشان التجربة
+            if(db.products.length === 0) db.products = defaultProducts;
+            
+            document.documentElement.style.setProperty('--primary', db.primaryColor);
+            document.getElementById('theme-color').value = db.primaryColor;
+            document.querySelector('.brand-name').innerText = db.name || "ELITE MENU";
         }
         renderMenu();
     }
@@ -157,7 +160,6 @@
         const menuDiv = document.getElementById('view-menu');
         const showOnlyStock = document.getElementById('stock-filter').checked;
         
-        // Filter Logic: Check category AND stock status
         let filtered = db.products.filter(p => {
             const matchesCategory = (currentCat === 'all' || p.category === currentCat);
             const matchesStock = (!showOnlyStock || p.inStock);
@@ -170,7 +172,7 @@
                 <img src="${p.img}" class="food-img">
                 <div class="food-info">
                     <h3>${p.name}</h3>
-                    <p>$${p.price.toFixed(2)}</p>
+                    <p>$${parseFloat(p.price).toFixed(2)}</p>
                     <div class="qty-box">
                         <button class="q-btn" onclick="changeQtyUI(${p.id}, -1)">-</button>
                         <span id="ui-qty-${p.id}" style="font-weight:800; width:20px; text-align:center;">1</span>
@@ -179,7 +181,7 @@
                     </div>
                 </div>
             </div>
-        `).join('');
+        `).join('') || '<p style="text-align:center; padding:50px; opacity:0.5;">No items found.</p>';
     }
 
     function changeQtyUI(id, delta) {
@@ -216,7 +218,19 @@
         });
 
         if(isConfirmed) {
-            db.orders.unshift({ id: Date.now(), items: Object.values(cart), total: "$"+total.toFixed(2), time: new Date().toLocaleTimeString() });
+            // تحديث الداتا الحقيقية من الـ LocalStorage قبل ما نعدل عشان منمسحش حاجة
+            let currentDb = JSON.parse(localStorage.getItem('elite_v5_db')) || db;
+            
+            currentDb.orders.unshift({ 
+                id: Date.now(), 
+                table: tableNum, // رقم الطاولة بتاعنا
+                items: Object.values(cart), 
+                total: "$"+total.toFixed(2), 
+                status: 'Pending', // لازم تكون Pending عشان الأدمن يشوفها
+                time: new Date().toLocaleTimeString() 
+            });
+
+            db = currentDb;
             saveData();
             cart = {}; updateCartFab();
             switchTab('orders', document.getElementById('btn-orders'));
@@ -244,8 +258,24 @@
     }
 
     function callWaiter() {
-        Swal.fire({ title: '🛎️ Waiter Called', icon: 'info', confirmButtonColor: db.primaryColor });
+        let currentDb = JSON.parse(localStorage.getItem('elite_v5_db')) || db;
+        if(!currentDb.waiterCalls) currentDb.waiterCalls = [];
+        
+        currentDb.waiterCalls.push({
+            id: Date.now(),
+            table: tableNum,
+            time: new Date().toLocaleTimeString()
+        });
+        
+        db = currentDb;
+        saveData();
+        Swal.fire({ title: '🛎️ Waiter Called', text: `Table ${tableNum} is calling.`, icon: 'info', confirmButtonColor: db.primaryColor });
     }
+
+    // الاستماع للتغييرات اللي بتحصل في صفحة الأدمن (زي تغيير اللون أو المنتجات)
+    window.addEventListener('storage', () => {
+        sync();
+    });
 
     sync();
 </script>
