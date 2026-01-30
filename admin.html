@@ -3,188 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Ultra POS | Admin Console</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Elite Admin Fixed | POS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #030712; --card: #111827; --primary: #3b82f6; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --bg: #030712; --card: #111827; --primary: #3b82f6; --success: #10b981; --danger: #ef4444; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f3f4f6; margin: 0; padding: 15px; }
 
-        /* Stunning Top Stats */
-        .stats-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
-        .stat-card { 
-            background: var(--card); padding: 20px 10px; border-radius: 24px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .stat-card small { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
-        .stat-card div { font-size: 1.4rem; font-weight: 900; margin-top: 8px; }
-        .stat-revenue { color: var(--success); }
-        .stat-orders { color: var(--primary); }
-        .stat-waiter { color: var(--danger); }
+        /* Top Bar Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #1f2937; }
+        .stat-card small { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; font-weight: 800; }
+        .stat-card div { font-size: 1.2rem; font-weight: 900; margin-top: 5px; }
 
-        /* Dashboard Layout */
-        .main-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 1024px) { .main-grid { grid-template-columns: 1fr 380px; } }
+        /* Containers */
+        .layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 1024px) { .layout { grid-template-columns: 1fr 350px; } }
 
-        /* Order Cards */
-        .order-card { 
-            background: var(--card); border-radius: 28px; padding: 25px; margin-bottom: 18px; 
-            border: 1px solid #1f2937; position: relative; overflow: hidden;
-            animation: slideIn 0.5s ease;
-        }
-        .order-card.priority { border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+        /* Items */
+        .order-box { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #1f2937; margin-bottom: 15px; }
+        .waiter-box { background: #450a0a; border: 2px solid var(--danger); padding: 15px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .table-no { background: var(--primary); color: white; padding: 6px 16px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; }
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; margin-top: 15px; font-size: 1rem; }
+        .btn-green { background: var(--success); color: white; }
+        .btn-white { background: white; color: #450a0a; padding: 10px 15px; border-radius: 10px; width: auto; margin-top: 0; }
         
-        /* Performance Timer Surprise */
-        .timer-badge { font-size: 0.75rem; color: var(--warning); background: rgba(245, 158, 11, 0.1); padding: 4px 10px; border-radius: 8px; font-weight: 700; }
-
-        .items-area { margin: 15px 0; border-top: 1px dashed #374151; padding-top: 15px; }
-        .item-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 1.1rem; font-weight: 600; }
-        .item-qty { color: var(--primary); margin-right: 10px; font-weight: 800; }
-
-        /* Big Action Buttons */
-        .btn-done { 
-            width: 100%; background: var(--success); color: white; border: none; padding: 20px; 
-            border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 8px 15px rgba(16, 185, 129, 0.2);
-        }
-        .btn-done:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(16, 185, 129, 0.3); }
-
-        /* Waiter Box */
-        .waiter-card { 
-            background: linear-gradient(135deg, #450a0a, #111827); border: 2px solid var(--danger);
-            padding: 20px; border-radius: 24px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
-            animation: pulse-danger 2s infinite;
-        }
-        @keyframes pulse-danger { 0% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); } 50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); } 100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); } }
-        .btn-resolve { background: white; color: #450a0a; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .item-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1f2937; }
+        .qty-tag { color: var(--primary); font-weight: 900; margin-right: 8px; }
     </style>
 </head>
 <body>
 
-<div class="stats-container">
-    <div class="stat-card">
-        <small>Total Orders</small>
-        <div id="count-all" class="stat-orders">0</div>
-    </div>
-    <div class="stat-card">
-        <small>Revenue</small>
-        <div id="rev-total" class="stat-revenue">$0.00</div>
-    </div>
-    <div class="stat-card">
-        <small>Waiter Calls</small>
-        <div id="waiter-total" class="stat-waiter">0</div>
-    </div>
+<div class="stats-grid">
+    <div class="stat-card"><small>Revenue</small><div id="stat-rev" style="color:var(--success)">$0</div></div>
+    <div class="stat-card"><small>All Orders</small><div id="stat-count" style="color:var(--primary)">0</div></div>
+    <div class="stat-card"><small>Active Calls</small><div id="stat-waiter" style="color:var(--danger)">0</div></div>
 </div>
 
-<div class="main-grid">
-    <div id="kitchen-display"></div>
-
-    <div id="waiter-sidebar"></div>
+<div class="layout">
+    <div id="orders-list"></div>
+    <div id="waiter-list"></div>
 </div>
-
-<audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNzEr3RsPtckw-AdD1DmFBPW_yLSvVtN8135lvei6tdynJ9HQBJoHDjPnb2WKQzSoeqA/exec";
-    let lastId = 0;
 
-    async function refresh() {
+    async function fetchData() {
         try {
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
+            console.log("Full Data:", data); // مراجعة البيانات في الكونسول
             
-            if (data.length > 0 && data[data.length-1].id != lastId) {
-                if(lastId !== 0) document.getElementById('notifSound').play().catch(e => {});
-                lastId = data[data.length-1].id;
-            }
-
-            processStats(data);
-            renderUI(data);
-        } catch (e) { console.log("Reconnecting..."); }
+            updateDashboard(data);
+        } catch (e) { console.error("Sync Error"); }
     }
 
-    function processStats(data) {
-        let totalRev = 0;
-        let orderCount = 0;
-        let waiterCount = 0;
+    function updateDashboard(data) {
+        let rev = 0;
+        let oCount = 0;
+        let wCount = 0;
 
-        data.forEach(d => {
-            if(d.type === 'order') {
-                orderCount++;
-                let price = parseFloat(d.total.replace(/[^0-9.-]+/g,"")) || 0;
-                totalRev += price;
-            } else if (d.type === 'waiter' && d.status !== 'Resolved') {
-                waiterCount++;
+        const ordersList = document.getElementById('orders-list');
+        const waiterList = document.getElementById('waiter-list');
+
+        let ordersHtml = "";
+        let waiterHtml = "";
+
+        data.forEach(item => {
+            // حساب الإحصائيات (الأرباح لا تختفي أبداً)
+            if (item.type === 'order') {
+                oCount++;
+                let val = parseFloat(item.total.replace(/[^0-9.-]+/g,"")) || 0;
+                rev += val;
+
+                // إظهار الطلب فقط إذا لم يكن Done أو Completed
+                if (item.status !== 'Done' && item.status !== 'Completed') {
+                    ordersHtml += `
+                        <div class="order-box" id="item-${item.id}">
+                            <div style="display:flex; justify-content:space-between; font-weight:900;">
+                                <span>Table ${item.table}</span>
+                                <span style="color:var(--success)">${item.total}</span>
+                            </div>
+                            <div style="margin:15px 0;">
+                                ${item.items.map(i => `<div class="item-line"><span><span class="qty-tag">${i.qty}x</span>${i.name}</span></div>`).join('')}
+                            </div>
+                            <button class="btn btn-green" onclick="handleAction('${item.id}', 'Done')">COMPLETE ORDER</button>
+                        </div>`;
+                }
+            } else if (item.type === 'waiter') {
+                // إظهار نداء الويتر فقط إذا لم يكن Resolved
+                if (item.status !== 'Resolved') {
+                    wCount++;
+                    waiterHtml += `
+                        <div class="waiter-box" id="item-${item.id}">
+                            <b>Table ${item.table}</b>
+                            <button class="btn btn-white" onclick="handleAction('${item.id}', 'Resolved')">OK</button>
+                        </div>`;
+                }
             }
         });
 
-        document.getElementById('rev-total').innerText = "$" + totalRev.toLocaleString(undefined, {minimumFractionDigits: 2});
-        document.getElementById('count-all').innerText = orderCount;
-        document.getElementById('waiter-total').innerText = waiterCount;
+        document.getElementById('stat-rev').innerText = "$" + rev.toFixed(2);
+        document.getElementById('stat-count').innerText = oCount;
+        document.getElementById('stat-waiter').innerText = wCount;
+
+        ordersList.innerHTML = ordersHtml || '<p style="text-align:center; opacity:0.3;">No active orders</p>';
+        waiterList.innerHTML = waiterHtml;
     }
 
-    function renderUI(data) {
-        const kitchen = document.getElementById('kitchen-display');
-        const waiter = document.getElementById('waiter-sidebar');
+    async function handleAction(id, newStatus) {
+        const el = document.getElementById('item-' + id);
+        if (el) {
+            el.style.opacity = "0.3";
+            el.style.pointerEvents = "none";
+        }
 
-        const pendingOrders = data.filter(d => d.type === 'order' && d.status !== 'Done');
-        const pendingWaiters = data.filter(d => d.type === 'waiter' && d.status !== 'Resolved');
-
-        // Waiter Calls Sidebar
-        waiter.innerHTML = pendingWaiters.map(w => `
-            <div class="waiter-card" id="row-${w.id}">
-                <div><small style="opacity:0.7">ALERT</small><br><b>TABLE ${w.table}</b></div>
-                <button class="btn-resolve" onclick="action('${w.id}', 'Resolved')">DONE</button>
-            </div>
-        `).join('');
-
-        // Kitchen Orders Display
-        kitchen.innerHTML = pendingOrders.reverse().map(o => {
-            // Surprise 1: Time Tracker Calculation
-            const minutesAgo = Math.floor((new Date() - new Date(o.time)) / 60000);
-            
-            return `
-                <div class="order-card priority" id="row-${o.id}">
-                    <div class="card-header">
-                        <div>
-                            <span class="table-no">T-${o.table}</span>
-                            <div style="margin-top:8px; font-size:0.7rem; opacity:0.5;">ID: #${o.id.toString().slice(-4)}</div>
-                        </div>
-                        <div class="timer-badge">⏱ ${minutesAgo}m ago</div>
-                    </div>
-                    <div class="items-area">
-                        ${o.items.map(i => `<div class="item-row"><span><span class="item-qty">${i.qty}x</span>${i.name}</span></div>`).join('')}
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin:15px 0; font-weight:800;">
-                        <span>TOTAL</span><span>${o.total}</span>
-                    </div>
-                    <button class="btn-done" onclick="action('${o.id}', 'Done')">COMPLETE ORDER</button>
-                </div>
-            `;
-        }).join('') || '<div style="text-align:center; padding:100px; opacity:0.2;">KITCHEN EMPTY</div>';
-    }
-
-    async function action(id, status) {
-        const card = document.getElementById('row-' + id);
-        if(card) { card.style.opacity = "0.3"; card.style.pointerEvents = "none"; }
-        
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify({ action: 'update', id: id, status: status })
+                body: JSON.stringify({ action: 'update', id: id, status: newStatus })
             });
-            setTimeout(refresh, 1000);
-        } catch (e) { alert("Network Error"); }
+            
+            // الحل الجذري للاختفاء: مسح العنصر تماماً من الصفحة بعد ثانية
+            setTimeout(() => {
+                if(el) el.remove();
+                fetchData(); // تحديث الأرقام
+            }, 800);
+        } catch (e) {
+            alert("Connection Error");
+            if(el) el.style.opacity = "1";
+        }
     }
 
-    setInterval(refresh, 5000);
-    refresh();
+    setInterval(fetchData, 5000);
+    fetchData();
 </script>
 </body>
 </html>
